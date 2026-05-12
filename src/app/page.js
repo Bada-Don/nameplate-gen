@@ -9,6 +9,12 @@ const SIZES = {
     '12x8': { label: '12" x 8" (S)', width: 900, height: 600, category: 'S' }
 };
 
+const THEMES = {
+    'black-gold': { label: 'Black + Gold', bg: '#1a1a1a', fg: '#c5a059', muted: '#a3844a' },
+    'white-gold': { label: 'White + Gold', bg: '#ffffff', fg: '#c5a059', muted: '#a3844a' },
+    'silver-black': { label: 'Silver + Black', bg: '#cfd2d6', fg: '#111111', muted: '#444444' }
+};
+
 const LOGO_PRESETS = {
     sikh: ["Khanda_1", "EkOnkar_1", "Khanda_1"],
     hindu: ["Swastik_1", "GaneshJi_1", "Swastik_1"],
@@ -75,7 +81,8 @@ export default function NameplateDesigner() {
         bottomLine: '',
         logoMode: 'auto',
         borderMode: 'auto',
-        plateSize: '15x10'
+        plateSize: '15x10',
+        colorTheme: 'black-gold'
     });
     const [status, setStatus] = useState('Initializing...');
     const [isError, setIsError] = useState(false);
@@ -131,7 +138,8 @@ export default function NameplateDesigner() {
             bottomLine: '',
             logoMode: 'auto',
             borderMode: 'auto',
-            plateSize: '15x10'
+            plateSize: '15x10',
+            colorTheme: 'black-gold'
         });
         setTrigger(t => t + 1);
     };
@@ -208,7 +216,15 @@ export default function NameplateDesigner() {
                         <option value="none">No symbol</option>
                     </select>
                 </label>
-                <label className="span-4">
+                <label className="span-3">
+                    Color Theme
+                    <select name="colorTheme" value={formData.colorTheme} onChange={handleInputChange}>
+                        {Object.entries(THEMES).map(([key, info]) => (
+                            <option key={key} value={key}>{info.label}</option>
+                        ))}
+                    </select>
+                </label>
+                <label className="span-3">
                     Plate Size
                     <select name="plateSize" value={formData.plateSize} onChange={handleInputChange}>
                         {Object.entries(SIZES).map(([key, info]) => (
@@ -216,7 +232,7 @@ export default function NameplateDesigner() {
                         ))}
                     </select>
                 </label>
-                <label className="span-4">
+                <label className="span-3">
                     Border
                     <select name="borderMode" value={formData.borderMode} onChange={handleInputChange}>
                         <option value="auto">Auto varied</option>
@@ -228,7 +244,7 @@ export default function NameplateDesigner() {
                         <option value="10">Border 10</option>
                     </select>
                 </label>
-                <div className="actions">
+                <div className="actions span-3">
                     <button type="submit" className="btn">Generate</button>
                     <button type="button" className="btn btn-secondary" onClick={handleSample}>Sample</button>
                 </div>
@@ -237,7 +253,7 @@ export default function NameplateDesigner() {
             <section className="suggestion-grid" aria-live="polite">
                 {profiles.map((profile, index) => (
                     <SuggestionCard 
-                        key={`${index}-${trigger}-${formData.plateSize}`}
+                        key={`${index}-${trigger}-${formData.plateSize}-${formData.colorTheme}`}
                         profile={profile} 
                         data={formData} 
                         setStatus={setStatus}
@@ -255,6 +271,7 @@ function SuggestionCard({ profile, data, setStatus, setIsError, fabric, ready })
     const canvasRef = useRef(null);
     const fabricCanvasRef = useRef(null);
     const sizeConfig = SIZES[data.plateSize] || SIZES['15x10'];
+    const themeConfig = THEMES[data.colorTheme] || THEMES['black-gold'];
 
     useEffect(() => {
         let isMounted = true;
@@ -277,7 +294,7 @@ function SuggestionCard({ profile, data, setStatus, setIsError, fabric, ready })
                 const canvas = new fabric.StaticCanvas(canvasRef.current, {
                     width: sizeConfig.width,
                     height: sizeConfig.height,
-                    backgroundColor: '#fff',
+                    backgroundColor: themeConfig.bg,
                     enableRetinaScalar: false // Reduce complexity for preview
                 });
                 
@@ -298,11 +315,11 @@ function SuggestionCard({ profile, data, setStatus, setIsError, fabric, ready })
                     hasFooterText: Boolean(data.bottomLine)
                 });
 
-                await addBorder(canvas, borderName, fabric, sizeConfig);
+                await addBorder(canvas, borderName, fabric, sizeConfig, themeConfig);
                 if (logoIds.length && boxes.logo) {
-                    await addLogoGroup(canvas, logoIds, boxes.logo, fabric);
+                    await addLogoGroup(canvas, logoIds, boxes.logo, fabric, themeConfig);
                 }
-                addText(canvas, engine, profile, data, boxes, fabric);
+                addText(canvas, engine, profile, data, boxes, fabric, themeConfig);
                 
                 if (isMounted && fabricCanvasRef.current === canvas) {
                     canvas.renderAll();
@@ -331,7 +348,7 @@ function SuggestionCard({ profile, data, setStatus, setIsError, fabric, ready })
                 fabricCanvasRef.current = null;
             }
         };
-    }, [profile, data, setStatus, setIsError, fabric, ready, sizeConfig]);
+    }, [profile, data, setStatus, setIsError, fabric, ready, sizeConfig, themeConfig]);
 
     return (
         <article className="suggestion-card">
@@ -388,7 +405,7 @@ function resolveLogos(profile, logoMode) {
     return LOGO_PRESETS[logoMode] || [];
 }
 
-async function addBorder(canvas, borderName, fabric, sizeConfig) {
+async function addBorder(canvas, borderName, fabric, sizeConfig, themeConfig) {
     try {
         const border = await loadSvg(`/assets/borders/${borderName}.svg`, fabric);
         const borderInset = 12;
@@ -396,6 +413,8 @@ async function addBorder(canvas, borderName, fabric, sizeConfig) {
         const maxHeight = sizeConfig.height - (borderInset * 2);
         
         fitObjectInto(border, maxWidth, maxHeight);
+        tintObject(border, themeConfig.fg);
+        
         border.set({
             left: sizeConfig.width / 2,
             top: sizeConfig.height / 2,
@@ -411,7 +430,7 @@ async function addBorder(canvas, borderName, fabric, sizeConfig) {
     }
 }
 
-async function addLogoGroup(canvas, logoIds, box, fabric) {
+async function addLogoGroup(canvas, logoIds, box, fabric, themeConfig) {
     try {
         const logos = await Promise.all(logoIds.map((id) => loadSvg(`/assets/logos/${id}.svg`, fabric)));
         const gap = logos.length > 1 ? 18 : 0;
@@ -420,7 +439,7 @@ async function addLogoGroup(canvas, logoIds, box, fabric) {
         logos.forEach((logo, index) => {
             const heightRatio = logos.length === 3 && index === 1 ? 1 : 0.86;
             fitObjectInto(logo, maxItemWidth, box.height * heightRatio);
-            tintObject(logo, '#111');
+            tintObject(logo, themeConfig.fg);
             logo.set({
                 originX: 'center',
                 originY: 'center',
@@ -459,9 +478,9 @@ async function addLogoGroup(canvas, logoIds, box, fabric) {
     }
 }
 
-function addText(canvas, engine, profile, data, boxes, fabric) {
+function addText(canvas, engine, profile, data, boxes, fabric, themeConfig) {
     const textOptions = {
-        fill: '#111',
+        fill: themeConfig.fg,
         textAlign: 'center',
         textBaseline: 'alphabetic'
     };
@@ -480,7 +499,7 @@ function addText(canvas, engine, profile, data, boxes, fabric) {
         const sub = new fabric.Text(data.address, {
             ...textOptions,
             fontFamily: profile.sub,
-            fill: '#2e3431',
+            fill: themeConfig.muted,
             charSpacing: 20
         });
         engine.fitTextObject(sub, boxes.sub, {
@@ -494,7 +513,7 @@ function addText(canvas, engine, profile, data, boxes, fabric) {
         const footer = new fabric.Text(data.bottomLine, {
             ...textOptions,
             fontFamily: profile.sub,
-            fill: '#4f5752',
+            fill: themeConfig.muted,
             charSpacing: 30
         });
         engine.fitTextObject(footer, boxes.footer, {
@@ -528,7 +547,8 @@ function fitObjectInto(object, maxWidth, maxHeight) {
 
 function tintObject(object, color) {
     if (object.set) {
-        object.set('fill', color);
+        if (object.fill) object.set('fill', color);
+        if (object.stroke && object.stroke !== 'none') object.set('stroke', color);
     }
 
     if (object.getObjects) {
