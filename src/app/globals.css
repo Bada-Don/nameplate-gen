@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'GreatVibes-Regular';
+    src: url('/assets/fonts/cursive/GreatVibes-Regular.ttf');
+}
+@font-face {
+    font-family: 'Schadow BT Roman';
+    src: url('/assets/fonts/simple/Schadow BT Roman.ttf');
+}
+@font-face {
+    font-family: 'Schadow BT Bold';
+    src: url('/assets/fonts/simple/Schadow BT Bold.ttf');
+}
+@font-face {
+    font-family: 'avalonb';
+    src: url('/assets/fonts/simple/avalonb.ttf');
+}
+@font-face {
+    font-family: 'ARIALUNI';
+    src: url('/assets/fonts/simple/ARIALUNI.ttf');
+}
+@font-face {
+    font-family: 'aristonb';
+    src: url('/assets/fonts/cursive/aristonb.ttf');
+}
+@font-face {
+    font-family: 'cgtime';
+    src: url('/assets/fonts/simple/cgtime.ttf');
+}
+@font-face {
+    font-family: 'RECHTMAN';
+    src: url('/assets/fonts/cursive/RECHTMAN.TTF');
+}
+@font-face {
+    font-family: 'cgtimeb';
+    src: url('/assets/fonts/simple/cgtimeb.ttf');
+}
+@font-face {
+    font-family: 'Lemon Jelly Personal Use';
+    src: url('/assets/fonts/cursive/Lemon Jelly Personal Use.ttf');
+}
+
+:root {
+    --bg: #f3f4f1;
+    --panel: #ffffff;
+    --ink: #202124;
+    --muted: #68706b;
+    --line: #d7dcd4;
+    --accent: #0f766e;
+    --accent-strong: #115e59;
+    --warn: #9a3412;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Arial, sans-serif;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 12px;
+    padding: 16px;
+    margin-bottom: 22px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+label {
+    display: grid;
+    gap: 7px;
+    color: #3f4642;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.span-3 {
+    grid-column: span 3;
+}
+
+.span-4 {
+    grid-column: span 4;
+}
+
+input,
+select,
+button {
+    min-height: 40px;
+    border-radius: 6px;
+    font: inherit;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 9px 10px;
+    color: var(--ink);
+    background: #fbfcfa;
+    border: 1px solid #cbd2ca;
+}
+
+.actions {
+    grid-column: span 2;
+    display: flex;
+    align-items: end;
+    gap: 8px;
+}
+
+.btn {
+    border: 0;
+    padding: 0 14px;
+    color: #fff;
+    background: var(--accent);
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn:hover {
+    background: var(--accent-strong);
+}
+
+.btn-secondary {
+    color: var(--ink);
+    background: #e5e9e3;
+}
+
+.suggestion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+    gap: 18px;
+}
+
+.suggestion-card {
+    overflow: hidden;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.suggestion-card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 10px 12px;
+    background: #222f2c;
+    color: #fff;
+}
+
+.suggestion-card h2 {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.suggestion-card .meta {
+    color: #d6e3df;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.canvas-wrap {
+    padding: 10px;
+    background: #f9faf8;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+canvas {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    background: #fff;
+}
+
+.error {
+    color: var(--warn);
+}
+
+@media (max-width: 760px) {
+    .span-3,
+    .span-4,
+    .actions {
+        grid-column: 1 / -1;
+    }
+}

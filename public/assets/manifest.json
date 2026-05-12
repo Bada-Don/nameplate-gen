@@ -1,0 +1,52 @@
+{
+  "fonts": {
+    "cursive": [
+      "aristonb",
+      "blackberry-jam-personal-use.regular",
+      "Freehand521 BT",
+      "GreatVibes-Regular",
+      "kaufmanb",
+      "Lemon Jelly Personal Use",
+      "RECHTMAN",
+      "SCRIPTBL"
+    ],
+    "simple": [
+      "ARIALUNI",
+      "aribl0",
+      "avalonb",
+      "avaloni",
+      "avalonn",
+      "avalont",
+      "cgtime",
+      "cgtimeb",
+      "cgtimebi",
+      "cgtimei",
+      "charter",
+      "Schadow BT Bold",
+      "Schadow BT Roman"
+    ]
+  },
+  "logos": {
+    "center_only": [
+      "EkOnkar_1",
+      "EkOnkar_2",
+      "EkOnkar_3",
+      "GaneshJi_1",
+      "GaneshJi_2",
+      "Om_1",
+      "Om_2",
+      "Om_3"
+    ],
+    "side_compatible": [
+      "Khanda_1",
+      "Khanda_3",
+      "Swastik_1",
+      "Swastik_2"
+    ],
+    "compounds": {
+      "Ganesh_Swastik": ["GaneshJi_1", "Swastik_1", "GaneshJi_1"],
+      "Om_Swastik": ["Swastik_1", "Om_1", "Swastik_1"],
+      "EkOnkar_Khanda": ["Khanda_1", "EkOnkar_1", "Khanda_1"]
+    }
+  }
+}
